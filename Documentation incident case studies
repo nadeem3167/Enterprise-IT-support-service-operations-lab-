@@ -1,0 +1,172 @@
+# IT Support Incident Case Studies
+
+This document records practical troubleshooting scenarios completed as part of the Enterprise IT Support & Service Operations Lab.
+
+The incidents were tracked using ServiceNow and investigated using the Windows enterprise lab consisting of DC01, SRV01 and CLIENT01.
+
+---
+
+## Incident 1 — User Unable to Sign In
+
+### User Report
+
+Alex Taylor reported that he was unable to sign in to his corporate account.
+
+### Initial Checks
+
+The investigation focused on the user's Active Directory account rather than immediately resetting the password.
+
+Checks included:
+
+- Account enabled/disabled status
+- Account lockout status
+- User identity
+- Domain account configuration
+
+### Root Cause
+
+The Active Directory account was locked out.
+
+### Resolution
+
+The account was unlocked through Active Directory Users and Computers.
+
+### Verification
+
+The account status was checked again after the change to confirm that the lockout had been cleared.
+
+### Key Learning
+
+A login failure does not automatically mean that the password needs resetting.
+
+A useful troubleshooting sequence is:
+
+`Account exists → Enabled? → Locked? → Password status → Correct domain/account`
+
+---
+
+## Incident 2 — Finance User Cannot Access Shared Resource
+
+### User Report
+
+A Finance user reported that they could no longer access the departmental Finance resource.
+
+### Environment
+
+Access to Finance resources was designed using the AGDLP model:
+
+`User → Finance-Users → FinanceShare-RW → Finance Resource`
+
+### Investigation
+
+The investigation included checking:
+
+- Active Directory user account
+- Departmental group membership
+- Global security groups
+- Domain Local resource groups
+- Share permissions
+- NTFS permissions
+
+### Root Cause
+
+The user's expected role-based access configuration was no longer correct.
+
+### Resolution
+
+The Finance access configuration was corrected through Active Directory group membership.
+
+### Key Learning
+
+Permissions should normally be assigned through groups rather than directly to individual users.
+
+This makes access easier to manage during onboarding, role changes and offboarding.
+
+---
+
+## Incident 3 — CLIENT01 Has No Internet Connectivity
+
+### User Report
+
+The user reported that CLIENT01 was connected to the corporate network but could not access internet resources.
+
+### Investigation
+
+The client configuration was examined using tools such as:
+
+`ipconfig /all`
+
+`ping`
+
+`nslookup`
+
+The workstation had:
+
+- A valid IP address
+- Correct subnet configuration
+- Correct internal DNS server
+
+However, the client did not have the expected default gateway.
+
+### Root Cause
+
+DHCP Option 003 Router was missing from the DHCP scope on SRV01.
+
+CLIENT01 therefore received an IP address but did not receive the information required to route traffic outside its local subnet.
+
+### Resolution
+
+DHCP Option 003 was restored with:
+
+`10.10.10.1`
+
+The CLIENT01 DHCP lease was then renewed.
+
+### Verification
+
+The workstation received the correct gateway and external connectivity was successfully restored.
+
+### Key Learning
+
+Receiving a valid DHCP address does not guarantee complete network connectivity.
+
+A useful network troubleshooting sequence is:
+
+`IP address → Subnet → Gateway → DNS → Connectivity → Name resolution`
+
+---
+
+## Additional ServiceNow Scenarios
+
+Additional incidents were created in ServiceNow to practise ticket handling and ITSM concepts, including:
+
+- Finance mapped drive missing from CLIENT01
+- Multiple users unable to access corporate resources
+- Potential DNS/infrastructure service disruption
+
+These scenarios were used to practise:
+
+- Impact
+- Urgency
+- Priority
+- Incident states
+- Work notes
+- Resolution documentation
+- Service restoration thinking
+
+---
+
+# Troubleshooting Approach
+
+Across the incidents, the following structured approach was used:
+
+1. Understand the user's reported symptom.
+2. Determine whether the issue affects one user, one device or multiple users.
+3. Check the most likely layer without making unnecessary changes.
+4. Gather evidence using administrative tools and commands.
+5. Identify the root cause.
+6. Apply the smallest appropriate fix.
+7. Verify service restoration.
+8. Document the investigation and resolution in ServiceNow.
+
+The objective was to develop a repeatable troubleshooting methodology rather than relying on random configuration changes.
